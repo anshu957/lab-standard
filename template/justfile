@@ -1,0 +1,29 @@
+# justfile — task runner for {{PROJECT}}.  Run `just` to list recipes.
+# Package module is substituted at scaffold time; {{exp}}/{{slug}} are just's own args.
+
+# List recipes
+default:
+    @just --list
+
+# Rebuild the experiments index (experiments/INDEX.md) from each run's manifest/metrics
+index:
+    python -m {{PKG}}.index build
+
+# Scaffold a new experiment folder (in Claude, prefer the /new-experiment skill)
+new-exp slug:
+    python -m {{PKG}}.index new {{slug}}
+
+# Run an experiment locally:  just run exp-0001_slug
+run exp:
+    python experiments/{{exp}}/run.py --config experiments/{{exp}}/config.yaml
+
+# Submit an experiment to SLURM (logs land inside the experiment folder):  just submit exp-0001_slug
+submit exp:
+    sbatch --job-name={{exp}} \
+           --output=experiments/{{exp}}/slurm_%j.out \
+           --error=experiments/{{exp}}/slurm_%j.err \
+           slurm/submit.sh {{exp}}
+
+# Run tests
+test:
+    pytest -x -q

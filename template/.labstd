@@ -1,0 +1,3 @@
+# Marker: this project follows the Lab Standard (~/.claude/lab-standard/STANDARD.md).
+# The path-guard hook activates only in directories that contain this file.
+version: 1

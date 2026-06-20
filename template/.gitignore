@@ -1,0 +1,33 @@
+# --- Data: never committed. Lives on shared store / scratch; path set in config. ---
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# --- Experiment artifacts: heavy outputs are git-ignored; the TEXT provenance
+#     (run.py, config.yaml, manifest.json, metrics.json, notes.md) IS committed. ---
+experiments/**/figures/
+experiments/**/models/
+experiments/**/artifacts/
+experiments/**/*.png
+experiments/**/*.pdf
+experiments/**/*.mp4
+experiments/**/*.h5
+experiments/**/*.npz
+experiments/**/*.pkl
+experiments/**/*.ckpt
+experiments/**/*.parquet
+experiments/**/slurm_*.out
+experiments/**/slurm_*.err
+experiments/**/run.log
+
+# --- MLflow local tracking store ---
+mlruns/
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.egg-info/
+.ipynb_checkpoints/
+build/
+dist/

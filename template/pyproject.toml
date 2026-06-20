@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PKG"
+version = "0.0.1"
+description = "{{PROJECT}}"
+requires-python = ">=3.10"
+# Runtime deps are pinned in environment.yml (conda). List pip-only extras here if needed.
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-x -q"

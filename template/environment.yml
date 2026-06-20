@@ -1,0 +1,15 @@
+name: {{ENV}}
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - matplotlib
+  - pyyaml
+  - mlflow
+  - pip
+  - pip:
+      - -e .
+# Add project-specific deps above (e.g. jax, keypoint-moseq, pytorch + cuda) and re-export:
+#   conda env export --no-builds | grep -v '^prefix:' > environment.yml
