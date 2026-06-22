@@ -6,7 +6,7 @@ repos:
       # Structural consistency: experiments<->INDEX, no dangling data symlinks, clean repo root.
       - id: lab-standard-check
         name: Lab Standard consistency check
-        entry: python -m {{PKG}}.check
+        entry: python3 src/{{PKG}}/check.py
         language: system
         pass_filenames: false
         always_run: true

@@ -20,6 +20,10 @@ experiments/**/*.parquet
 experiments/**/slurm_*.out
 experiments/**/slurm_*.err
 experiments/**/run.log
+# bulky per-run provenance dumps (manifest.json stays tracked; these are kept on disk only)
+experiments/**/environment.lock.yml
+experiments/**/git_diff.patch
+experiments/**/pip-freeze.txt
 
 # --- MLflow local tracking store ---
 mlruns/
