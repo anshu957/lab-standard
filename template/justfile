@@ -24,6 +24,10 @@ submit exp:
            --error=experiments/{{exp}}/slurm_%j.err \
            slurm/submit.sh {{exp}}
 
-# Run tests
+# Run tests (pin your science here; see tests/test_example.py)
 test:
     pytest -x -q
+
+# Structural consistency checks (experiments<->INDEX, no dangling symlinks, clean root)
+check:
+    python -m {{PKG}}.check

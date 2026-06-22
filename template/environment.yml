@@ -8,8 +8,10 @@ dependencies:
   - matplotlib
   - pyyaml
   - mlflow
+  - pytest
   - pip
   - pip:
       - -e .
+      - pre-commit
 # Add project-specific deps above (e.g. jax, keypoint-moseq, pytorch + cuda) and re-export:
 #   conda env export --no-builds | grep -v '^prefix:' > environment.yml

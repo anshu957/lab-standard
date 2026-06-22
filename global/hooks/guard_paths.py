@@ -18,6 +18,7 @@ ALLOWED_ROOT = {
     "README.md", "AGENTS.md", "CLAUDE.md", "CLAUDE.local.md", "pyproject.toml",
     "justfile", "Justfile", "environment.yml", "requirements.txt", ".gitignore",
     ".labstd", ".python-version", "LICENSE", "setup.cfg", "Makefile", "uv.lock",
+    ".pre-commit-config.yaml",
 }
 
 

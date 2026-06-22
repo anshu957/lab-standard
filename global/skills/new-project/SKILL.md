@@ -42,6 +42,8 @@ cd <TARGET_DIR>
 git init && git add -A && git commit -m "Scaffold from Lab Standard"
 # environment (ask before running — this can be slow / large):
 # mamba env create -f environment.yml && conda activate <env> && pip install -e .
+# enable the consistency-check git hook (once the env exists):
+# pre-commit install
 ```
 
 ## Step 5 — orient the user

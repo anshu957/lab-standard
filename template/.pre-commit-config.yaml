@@ -1,0 +1,12 @@
+# Deterministic guardrail that runs on every `git commit` (after a one-time `pre-commit install`).
+# ~0 token cost (a plain program, not the agent). Uses the active conda env (language: system).
+repos:
+  - repo: local
+    hooks:
+      # Structural consistency: experiments<->INDEX, no dangling data symlinks, clean repo root.
+      - id: lab-standard-check
+        name: Lab Standard consistency check
+        entry: python -m {{PKG}}.check
+        language: system
+        pass_filenames: false
+        always_run: true

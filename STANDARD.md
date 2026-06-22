@@ -77,6 +77,20 @@ CLAUDE.md is *steering*, not a guarantee; only hooks hard-stop an agent. So enfo
 | Workflow     | `/new-experiment` skill        | encodes the run procedure so agents reuse it, not regenerate it |
 | Guardrail    | PreToolUse hook `guard_paths.py` | the only hard stop: blocks writes to repo root + edits to data/raw |
 
+## 6b. Consistency check & tests (keeping it honest, low-token)
+Steering keeps agents *mostly* on track, but docs/structure can still drift. Two deterministic
+guardrails — plain programs, ~0 LLM tokens — make it mechanical:
+- **`just check`** (`src/<pkg>/check.py`) asserts structural invariants: every `experiments/exp-*/`
+  has a README **and** an `INDEX.md` row; no dangling symlinks under `data/`; no stray files at the
+  repo root. Add project-specific assertions as new `check_*` functions.
+- **`pre-commit`** runs `just check` automatically on every `git commit` (one-time `pre-commit install`).
+- **`just test`** (pytest) pins the **science**: a known-input → known-output test per load-bearing
+  transform. Convention: **every ADR that encodes a computational rule gets a test that enforces it**
+  (name the ADR in the test). The template ships `tests/test_example.py` showing the pattern.
+
+No style linter by default — overkill for exploratory research code. (Add `ruff` later if you want
+cheap bug-catching like undefined-name detection; it's a few lines in `.pre-commit-config.yaml`.)
+
 ## 7. Environment & tools (chosen defaults)
 - **Env manager: conda/mamba** (needed for JAX/CUDA/compiled deps). `environment.yml` is committed.
 - **Tracker: MLflow, local file store.** No server, no account; upgrade to a UI later only if needed.
