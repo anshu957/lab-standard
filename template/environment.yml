@@ -13,5 +13,6 @@ dependencies:
   - pip:
       - -e .
       - pre-commit
+      - rust-just
 # Add project-specific deps above (e.g. jax, keypoint-moseq, pytorch + cuda) and re-export:
 #   conda env export --no-builds | grep -v '^prefix:' > environment.yml
