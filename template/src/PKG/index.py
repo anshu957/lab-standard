@@ -4,13 +4,14 @@
     python -m {{PKG}}.index new <slug>   # scaffold experiments/exp-NNNN_<slug>/
 
 `runs.jsonl` is machine-readable and regenerable, so it never drifts. `experiments/INDEX.md` is the
-human/agent-facing table — you edit its hypothesis/result text by hand.
+human/agent-facing table; `new` auto-adds a stub row, so you only fill in the hypothesis/result text.
 """
 from __future__ import annotations
 
 import json
 import re
 import sys
+from datetime import date
 from pathlib import Path
 
 from .provenance import find_root
@@ -46,6 +47,32 @@ def build(root: Path) -> None:
         print(f"  {r['run_id']:32s} {commit:8s} {r.get('metrics', '')}")
 
 
+def _append_index_row(text: str, row: str) -> str:
+    """Insert a markdown table row after the last existing table row."""
+    lines = text.splitlines()
+    rows = [i for i, ln in enumerate(lines) if ln.lstrip().startswith("|")]
+    if rows:
+        lines.insert(rows[-1] + 1, row)
+    else:
+        lines += ["", row]
+    return "\n".join(lines) + "\n"
+
+
+def register_in_index(root: Path, name: str) -> None:
+    """Auto-add a stub row for `name` to experiments/INDEX.md (so you never have to ask)."""
+    index = _exp_dir(root) / "INDEX.md"
+    row = f"| {name} | {date.today().isoformat()} | _(fill in: hypothesis/goal)_ | `just run {name}` | — | planned |"
+    if index.exists():
+        if name not in index.read_text():
+            index.write_text(_append_index_row(index.read_text(), row))
+    else:
+        index.write_text(
+            "# Experiments index\n\n"
+            "| ID | Date | Hypothesis / goal | Command | Result | Status |\n"
+            "|----|------|-------------------|---------|--------|--------|\n" + row + "\n"
+        )
+
+
 def new(root: Path, slug: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", slug.lower()).strip("-")
     nums = [int(EXP_RE.match(d.name).group(1))
@@ -58,9 +85,9 @@ def new(root: Path, slug: str) -> str:
     (d / "config.yaml").write_text(_CONFIG_STUB)
     (d / "run.py").write_text(_RUN_STUB.replace("__NAME__", name))
     (d / "README.md").write_text(_README_STUB.replace("__NAME__", name))
-    print(f"created {d}")
-    print(f"Next: fill {name}/README.md (hypothesis), edit config.yaml + run.py, "
-          f"add a row to experiments/INDEX.md, then `just run {name}`.")
+    register_in_index(root, name)
+    print(f"created {d}  (+ auto-registered in experiments/INDEX.md)")
+    print(f"Next: fill {name}/README.md (hypothesis) + edit config.yaml + run.py, then `just run {name}`.")
     return name
 
 
