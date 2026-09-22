@@ -7,9 +7,13 @@
 {{ONE_PARAGRAPH: the scientific goal, the main pipeline, the key data. Fill this in.}}
 
 ## Start here — every session, before writing code
-1. Read `experiments/INDEX.md` — what has already been tried and its outcome. **Do not re-run a completed experiment.**
-2. Read the most recent ADRs in `docs/decisions/` — *why* the project is the way it is.
-3. Before writing a utility, **grep `src/{{PKG}}/`** for an existing one. Reuse, don't regenerate.
+1. **Read the project state** (a `SessionStart` hook also injects this): **`WORKLOG.md`** (what recent sessions did) + recent `git log` + **`CONCLUSIONS.md`** (Established / Open / Retracted). **Don't redo finished work; never contradict an Established conclusion without re-deriving it.**
+2. Read `experiments/INDEX.md` — what has already been tried and its outcome. **Do not re-run a completed experiment.**
+3. Read the most recent ADRs in `docs/decisions/` — *why* the project is the way it is.
+4. Before writing a utility, **grep `src/{{PKG}}/`** for an existing one. Reuse, don't regenerate.
+
+## Finish every task by
+Appending a dated entry to **`WORKLOG.md`** (what you did / why / result / what's next). A `Stop` hook blocks finishing if you changed real files without logging. Update `CONCLUSIONS.md` too if a conclusion changed.
 
 ## Setup & commands
 - Environment: `conda activate {{ENV}}`  (defined in `environment.yml`)
@@ -25,13 +29,16 @@
 - `data/processed/`  — Derived data. Regenerable; safe to overwrite.
 - `src/{{PKG}}/`      — Reusable, importable, tested library code. **Add new utilities HERE**, not in scripts.
 - `experiments/`     — One folder per run: `exp-NNNN_slug/`. **All new run code + ALL its outputs go inside its own folder** (figures, metrics, logs, SLURM .err/.out). Never scatter outputs elsewhere.
+- `deliverables/`    — Derived artifacts built FROM experiments (talks, manuscripts, reports): `deliverables/<slug>/`, each with a README naming the experiments it draws on. NOT a run (no hypothesis/metrics).
 - `notebooks/`       — Exploration & narrative only. Naming: `<phase>.<n>-<initials>-<desc>.ipynb` (phase 0 explore, 1 clean, 2 viz, 3 model, 4 publish).
 - `docs/decisions/`  — Architecture Decision Records (ADRs), numbered and immutable.
-- **NEVER write scripts or outputs to the repo root.** (A hook blocks this.)
+- **NEVER write scripts or outputs to the repo root, or create a new top-level directory.** Everything substantial has a declared home above. (A hook blocks stray root files + undeclared top-level dirs; `just check` is the commit-time backstop.)
 
 ## What goes where (the rule that keeps this clean)
-- Logic you might call twice  → a function in `src/{{PKG}}/`.
+- Logic you compute with (any transform, stat, plot helper) → a **pure function** in `src/{{PKG}}/` (same inputs → same output, no hidden state), imported everywhere. **Never re-implement it in an experiment.** `just check` fails a commit if a def/class is duplicated across experiments or shadows a `src/` name.
+- Use a **class only when an object owns state that outlives one call** (a fitted model, a config, a loader) — never to hold analysis math.
 - A specific run/analysis      → `experiments/exp-NNNN_slug/run.py` that *imports* `src/{{PKG}}/` and writes only into its own folder.
+- A derived artifact (talk, paper) → `deliverables/<slug>/` with a README pointing back to its source experiments.
 - A quick look                 → a numbered notebook.
 - A decision that shapes the project → a new ADR.
 

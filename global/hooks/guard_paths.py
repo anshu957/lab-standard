@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
 """Lab-Standard PreToolUse guard.
 
-Hard-blocks two things, but ONLY inside a Lab-Standard project (a dir tree containing a `.labstd`
+Hard-blocks three things, but ONLY inside a Lab-Standard project (a dir tree containing a `.labstd`
 marker) so it never interferes with other repos:
   1. Any write/edit to `data/raw/`  (raw data is immutable).
   2. Creating a NEW file directly in the repo root  (scripts/outputs belong in experiments/ or src/).
+  3. Creating a NEW file inside an UNDECLARED top-level directory  (every substantial artifact must
+     live in a declared home: experiments/ for runs, deliverables/<slug>/ for derived artifacts like
+     talks/manuscripts, src/ for reusable code, notebooks/ for exploration). This is what stops a
+     stray `talk/` or `analysis_v2/` from silently appearing at the top level.
 
-Editing files that already exist at the root (README, AGENTS.md, pyproject.toml, ...) is allowed.
+Editing files that already exist (anywhere) is allowed. NOTE: this only sees the Write/Edit family;
+files created via Bash (e.g. a .pptx built by a skill) bypass it — `check.py`'s clean-root check is
+the commit-time backstop for those.
 Contract: exit 0 = allow; exit 2 + stderr = block (reason shown to Claude). Fails OPEN on any error.
 """
 import json
@@ -15,10 +21,16 @@ from pathlib import Path
 
 WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
 ALLOWED_ROOT = {
-    "README.md", "AGENTS.md", "CLAUDE.md", "CLAUDE.local.md", "pyproject.toml",
-    "justfile", "Justfile", "environment.yml", "requirements.txt", ".gitignore",
-    ".labstd", ".python-version", "LICENSE", "setup.cfg", "Makefile", "uv.lock",
-    ".pre-commit-config.yaml",
+    "README.md", "AGENTS.md", "CLAUDE.md", "CLAUDE.local.md", "CONCLUSIONS.md", "WORKLOG.md",
+    "pyproject.toml", "justfile", "Justfile", "environment.yml", "requirements.txt",
+    ".gitignore", ".labstd", ".python-version", "LICENSE", "setup.cfg", "Makefile",
+    "uv.lock", ".pre-commit-config.yaml",
+}
+# The only directories allowed directly under the repo root. Everything substantial lives in one of
+# these; a new top-level dir means an undeclared, unregistered artifact — block it.
+ALLOWED_ROOT_DIRS = {
+    "src", "data", "experiments", "deliverables", "notebooks", "docs", "tests", "slurm",
+    "mlruns", ".git", ".github", ".ipynb_checkpoints", ".pytest_cache", "__pycache__",
 }
 
 
@@ -66,6 +78,23 @@ def main():
             f"src/, exploration in notebooks/. See AGENTS.md."
         )
         sys.exit(2)
+
+    # 3) no NEW files inside an undeclared top-level directory
+    try:
+        rel = target.relative_to(root)
+    except ValueError:
+        sys.exit(0)  # outside the project — not our business
+    if len(rel.parts) >= 2 and not target.exists():
+        top = rel.parts[0]
+        if top not in ALLOWED_ROOT_DIRS:
+            sys.stderr.write(
+                f"[Lab Standard] Blocked: '{top}/' is not a declared top-level directory, so "
+                f"'{rel}' has no registered home. A run -> experiments/<exp-id>/ (use /new-experiment); "
+                f"a derived artifact (talk, manuscript, report) -> deliverables/<slug>/ with a README "
+                f"naming the experiments it draws on. Add the dir to ALLOWED_ROOT_DIRS + AGENTS.md only "
+                f"if it's a deliberate new part of the project's structure."
+            )
+            sys.exit(2)
 
     sys.exit(0)
 
