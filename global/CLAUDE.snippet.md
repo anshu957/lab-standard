@@ -13,6 +13,7 @@ Where things go:
   ALL of its outputs (figures, metrics, logs, SLURM .err/.out) stay inside that folder.
 - Exploration → `notebooks/`. A cross-cutting decision → an ADR in `docs/decisions/`.
 - NEVER write scripts/outputs to the repo root. NEVER modify `data/raw/`.
+- **RAM-monitor every job (hook-enforced).** Run python/R/`just run` as `bash ~/.claude/hooks/memwatch.sh <cmd>` (kills at `MEMWATCH_CAP_GB`, default 70% of RAM, or system free < 1 GB). Write memory-light code (no full AnnData copies; `del` + `gc` per loop). Report the `peak_rss` line.
 
 New project? Use `/new-project` to scaffold from the template — don't invent a layout.
 

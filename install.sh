@@ -3,9 +3,9 @@
 #
 # What it touches (all under ~/.claude):
 #   - copies global/skills/{new-project,new-experiment} -> ~/.claude/skills/   (overwrites those two)
-#   - copies global/hooks/{guard_paths.py,ground_check.sh,session_state.sh,finish_gate.sh} -> ~/.claude/hooks/
+#   - copies global/hooks/{guard_paths.py,ground_check.sh,session_state.sh,finish_gate.sh,memwatch.sh,require_memwatch.sh} -> ~/.claude/hooks/
 #   - inserts/refreshes a marked block in              ~/.claude/CLAUDE.md     (backup made)
-#   - merges the hooks (PreToolUse/UserPromptSubmit/SessionStart/Stop) into ~/.claude/settings.json (backup)
+#   - merges the hooks (PreToolUse incl. Bash RAM gate/UserPromptSubmit/SessionStart/Stop) into ~/.claude/settings.json (backup)
 # Backups are written next to the originals as *.bak-<timestamp>. Re-run after `git pull` to update.
 set -euo pipefail
 
@@ -21,8 +21,11 @@ cp    "$LSTD/global/hooks/guard_paths.py"   "$CL/hooks/"
 cp    "$LSTD/global/hooks/ground_check.sh"  "$CL/hooks/"
 cp    "$LSTD/global/hooks/session_state.sh" "$CL/hooks/"
 cp    "$LSTD/global/hooks/finish_gate.sh"   "$CL/hooks/"
+cp    "$LSTD/global/hooks/memwatch.sh"      "$CL/hooks/"
+cp    "$LSTD/global/hooks/require_memwatch.sh" "$CL/hooks/"
 chmod +x "$CL/hooks/guard_paths.py" "$CL/hooks/ground_check.sh" \
-         "$CL/hooks/session_state.sh" "$CL/hooks/finish_gate.sh"
+         "$CL/hooks/session_state.sh" "$CL/hooks/finish_gate.sh" \
+         "$CL/hooks/memwatch.sh" "$CL/hooks/require_memwatch.sh"
 
 echo "[lab-standard] refreshing CLAUDE.md block..."
 python3 - "$CL/CLAUDE.md" "$LSTD/global/CLAUDE.snippet.md" "$TS" <<'PY'

@@ -46,6 +46,7 @@ Appending a dated entry to **`WORKLOG.md`** (what you did / why / result / what'
 Every experiment folder is self-describing. `/new-experiment` and `src/{{PKG}}/provenance.py` write a `manifest.json` capturing: git commit (+ dirty diff), conda env, seed, input/output hashes, host, and SLURM job id. Metrics go to a local MLflow store (`mlruns/`) via `src/{{PKG}}/tracking.py`. When you finish a run, update its row in `experiments/INDEX.md`.
 
 ## Conventions
+- **RAM-monitor every job (hook-enforced).** Run python/R/`just run` as `bash ~/.claude/hooks/memwatch.sh <cmd>` (kills at `MEMWATCH_CAP_GB`, default 70% of RAM, or system free < 1 GB). Write memory-light code (no full AnnData copies; `del` + `gc` per loop). Report the `peak_rss` line.
 - No hardcoded params: every experiment reads a `config.yaml` (see `src/{{PKG}}/config.py`); the resolved config is saved into the run folder.
 - Ask before: adding a dependency, changing `data/raw/`, or deleting anything in `experiments/`.
 - Finished a run, or made a project-shaping choice? Leave a trace (INDEX.md row / new ADR) so the next session isn't blind.
