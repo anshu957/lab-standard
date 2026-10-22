@@ -50,6 +50,7 @@ project/
 - **Reusable logic goes to `src/` as pure functions** (same inputs → same output, no hidden state), imported — never copy-pasted into scripts. Grep `src/` first. A class only when an object owns state that outlives one call (a fitted model, a config); never to hold analysis math. (`just check` fails a commit on duplicated/shadowed defs — the paradigm rail.)
 - **Nothing in the repo root, and no undeclared top-level directory.** Every substantial artifact has a declared home: a run → `experiments/`, a derived artifact (talk/paper) → `deliverables/<slug>/` (with a README naming its source experiments), reusable code → `src/`, exploration → `notebooks/`.
 - **No hardcoded params.** Experiments read a `config.yaml`; the resolved config is saved per run.
+- **Every figure goes through the `figure-hygiene` skill** (load it before any plotting code): one question = one title, 2–3 panels, no stats/method text on the plot (→ `figure_captions.md`), vector PDF with a stable name, `qa.py` + look at the PNG before showing.
 - **Leave a trace + commit it.** Finished a run → update its `INDEX.md` row; made a project-shaping choice → ADR. Non-doc work must be **committed** at the finishing boundary (a `Stop` hook blocks otherwise), so git — and each manifest's commit hash — matches reality.
 
 ## 4. Self-describing runs (provenance)

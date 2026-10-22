@@ -38,6 +38,14 @@ Guard against it:
    what's next). A `Stop` hook **blocks finishing** if you changed real files (scripts/data/figures)
    without logging. Git is the never-stale ground truth — the log points to it; keep both current.
 
+### Figures (every plot, every project)
+- **Before writing ANY plotting code** (matplotlib/seaborn/ggplot, `savefig`/`ggsave`), **invoke the
+  `figure-hygiene` skill** and follow it: one question per figure = the one title, 2–3 panels max,
+  no numbers/method notes on the plot (they go in `figure_captions.md`), vector PDF, stable name.
+- Agree the panel design (question + panels) with me BEFORE coding. Run its `qa.py` and look at the
+  PNGs before showing a figure.
+- Skill source: github.com/anshu957/my-scientific-research-skills (`skills/figure-hygiene`).
+
 ### Response style (every reply)
 I have ADHD and cannot absorb long, chatty responses — they actively fail.
 - **Answer the exact question first, in the fewest lines.** Front-load the command/number/verdict.
