@@ -40,10 +40,10 @@ Guard against it:
 
 ### Figures (every plot, every project)
 - **Before writing ANY plotting code** (matplotlib/seaborn/ggplot, `savefig`/`ggsave`), **invoke the
-  `figure-hygiene` skill** and follow it: one question per figure = the one title, 2–3 panels max,
-  no numbers/method notes on the plot (they go in `figure_captions.md`), vector PDF, stable name.
-- Agree the panel design (question + panels) with me BEFORE coding. Run its `qa.py` and look at the
-  PNGs before showing a figure.
+  `figure-hygiene` skill** and follow it: one figure = one question = one panel, the question as its
+  bold title, no numbers/method notes on the plot (they go in `figure_captions.md`), vector PDF, stable name.
+- Ask me only when the design is genuinely ambiguous. Run its `qa.py` and look at the PNGs before
+  showing a figure.
 - Skill source: github.com/anshu957/my-scientific-research-skills (`skills/figure-hygiene`).
 
 ### Response style (every reply)
