@@ -39,12 +39,16 @@ Note: the `justfile` keeps `{{exp}}`/`{{slug}}` — those are `just`'s own args,
 ## Step 4 — initialize
 ```bash
 cd <TARGET_DIR>
-git init && git add -A && git commit -m "Scaffold from Lab Standard"
+git init
+# commit gate: a plain git hook (no pre-commit dependency) that runs the consistency check,
+# incl. "no data in the commit" (blocks staged files > 1 MB or under results/logs/data). REQUIRED —
+# EPAS1 went months without it because `pre-commit install` was left as an optional comment.
+printf '#!/bin/sh\nexec python3 src/<PKG>/check.py\n' > .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+git add -A && git commit -m "Scaffold from Lab Standard"
 # environment (ask before running — this can be slow / large):
 # mamba env create -f environment.yml && conda activate <env> && pip install -e .
-# enable the consistency-check git hook (once the env exists):
-# pre-commit install
 ```
+Never stage with a blanket `git add -A` without looking at `git status` first; result tables are data.
 
 ## Step 5 — orient the user
 Tell them: edit `AGENTS.md`'s "What this project is", point `data/raw/` at the real data, then use

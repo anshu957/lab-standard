@@ -39,18 +39,14 @@ Guard against it:
    without logging. Git is the never-stale ground truth — the log points to it; keep both current.
 
 ### Figures (every plot, every project)
-- **Before writing ANY plotting code** (matplotlib/seaborn/ggplot, `savefig`/`ggsave`), **invoke the
-  `figure-hygiene` skill** and follow it: one figure = one question = one panel, the question as its
-  bold title, no numbers/method notes on the plot (they go in `figure_captions.md`), vector PDF, stable name.
-- Ask me only when the design is genuinely ambiguous. Run its `qa.py` and look at the PNGs before
-  showing a figure.
+- **Before writing ANY plotting code, invoke the `figure-hygiene` skill** and follow it (one figure = one question = one panel, the question as its bold title, no numbers/method notes on the plot → `figure_captions.md`). Ask me only when the design is genuinely ambiguous; run its `qa.py` and look at the PNG before showing.
+- Save figures as **PDF only** (vector, publication-grade). Never emit the same figure in a second format (no parallel `.png`).
+- Use **stable, descriptive filenames** so re-running a script **overwrites** the same file. Never spawn per-iteration variants (`_v2`, `_pt_ot`, timestamped copies) for the same plot.
+- When you change or supersede a figure, **delete the old/stale file(s)** in the same step, so the `figures/` folder never accumulates duplicates or confusing leftovers.
+- Title/caption each figure with **what method produced it** when the method isn't obvious (e.g. "Slingshot" vs a custom curve), so figures are never ambiguous.
 - Skill source: github.com/anshu957/my-scientific-research-skills (`skills/figure-hygiene`).
 
-### Response style (every reply)
-I have ADHD and cannot absorb long, chatty responses — they actively fail.
-- **Answer the exact question first, in the fewest lines.** Front-load the command/number/verdict.
-- **Plain language, no jargon** unless it's load-bearing; gloss any term you must keep, once.
-- Cut openers, closers, recaps, and options-menus I didn't ask for.
-- Keep only load-bearing science: a real confound, a wrong result, or a genuine uncertainty always
-  stays even when short — brevity compresses words, never substance.
+### Thinking and reply style (every reply)
+- Comes from `~/.claude/lab-standard/global/RULES.md` (3 core rules + 4 labels: Measured / Failed /
+  Reasoning / Hunch), injected into every prompt by the `core_rules.sh` hook. Edit the rules there, not here.
 <!-- LAB-STANDARD:END -->
