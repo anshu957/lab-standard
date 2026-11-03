@@ -52,6 +52,7 @@ project/
 - **No hardcoded params.** Experiments read a `config.yaml`; the resolved config is saved per run.
 - **Every figure goes through the `figure-hygiene` skill** (load it before any plotting code): one figure = one question = one panel, the question as its bold title, no stats/method text on the plot (→ `figure_captions.md`), vector PDF with a stable name, `qa.py` + look at the PNG before showing.
 - **Leave a trace + commit it.** Finished a run → update its `INDEX.md` row; made a project-shaping choice → ADR. Non-doc work must be **committed** at the finishing boundary (a `Stop` hook blocks otherwise), so git — and each manifest's commit hash — matches reality.
+- **Commit code and provenance, never data.** Committed: scripts, `config.yaml`, `manifest.json`, `metrics/*.json`, READMEs, ledgers. Not committed: anything in `data/`, an experiment's `results/`, `logs/`, `figures/`, `output/`. Enforced at commit time by `.git/hooks/pre-commit` → `check.py` "no data in the commit" (staged file > 1 MB or under those folders fails). Every project must have that hook installed (`/new-project` step 4).
 
 ## 4. Self-describing runs (provenance)
 `run.py` calls `provenance.write_manifest()` and `tracking.run()` for you. Each run folder ends up
@@ -78,6 +79,7 @@ CLAUDE.md is *steering*, not a guarantee; only hooks hard-stop an agent. So enfo
 | Map          | per-project `AGENTS.md`        | the project-specific contract |
 | Workflow     | `/new-experiment` skill        | encodes the run procedure so agents reuse it, not regenerate it |
 | Guardrail    | PreToolUse hook `guard_paths.py` | hard stop: blocks writes to repo root, edits to data/raw, + new files in an undeclared top-level dir (files made via Bash slip past — `just check` is the commit-time backstop) |
+| Core rules   | `UserPromptSubmit` hook `core_rules.sh` + `global/RULES.md` | injects 3 generic rules (don't fool yourself; thought experiment + estimate first; explain like Feynman) and 4 reply labels (Measured / Failed / Reasoning / Hunch) into **every** prompt, every project — deterministic, not a skill the model may skip |
 | Grounding    | `UserPromptSubmit` hook `ground_check.sh` + per-project `CONCLUSIONS.md` | injects the conclusions ledger (Established/Open/Retracted) into **every** prompt so verified findings can't drift out of attention mid-session; don't contradict an Established conclusion without re-deriving it |
 | Lifecycle: START | `SessionStart` hook `session_state.sh` | injects recent git log/status + `WORKLOG.md` tail + ledger at session open, so every session begins knowing what's been done + what's in flight (don't redo finished work) |
 | Lifecycle: FINISH | `Stop` hook `finish_gate.sh` + per-project `WORKLOG.md` | **hard-blocks finishing** when real files changed (non-`.md`: scripts/data/figures) unless (1) `WORKLOG.md` was updated AND (2) that work is **committed** — the commit-gate keeps git the never-stale ground truth. Read-only turns change nothing, so it never fires on them. |

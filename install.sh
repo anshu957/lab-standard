@@ -23,9 +23,10 @@ cp    "$LSTD/global/hooks/session_state.sh" "$CL/hooks/"
 cp    "$LSTD/global/hooks/finish_gate.sh"   "$CL/hooks/"
 cp    "$LSTD/global/hooks/memwatch.sh"      "$CL/hooks/"
 cp    "$LSTD/global/hooks/require_memwatch.sh" "$CL/hooks/"
+cp    "$LSTD/global/hooks/core_rules.sh"    "$CL/hooks/"
 chmod +x "$CL/hooks/guard_paths.py" "$CL/hooks/ground_check.sh" \
          "$CL/hooks/session_state.sh" "$CL/hooks/finish_gate.sh" \
-         "$CL/hooks/memwatch.sh" "$CL/hooks/require_memwatch.sh"
+         "$CL/hooks/memwatch.sh" "$CL/hooks/require_memwatch.sh" "$CL/hooks/core_rules.sh"
 
 echo "[lab-standard] refreshing CLAUDE.md block..."
 python3 - "$CL/CLAUDE.md" "$LSTD/global/CLAUDE.snippet.md" "$TS" <<'PY'

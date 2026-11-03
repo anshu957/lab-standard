@@ -35,3 +35,14 @@ __pycache__/
 .ipynb_checkpoints/
 build/
 dist/
+
+# --- Result tables, logs and data in experiments are DATA, not provenance: never committed
+#     (added 2026-11-03 after EPAS1 committed 189 results/*.csv). Small summaries go in
+#     experiments/**/metrics/. src/<pkg>/check.py blocks staged files > 1 MB as a backstop. ---
+experiments/**/results/
+experiments/**/logs/
+experiments/**/output/
+experiments/**/cache/
+experiments/**/input/
+*.h5ad
+*.rds

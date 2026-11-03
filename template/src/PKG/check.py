@@ -65,8 +65,12 @@ def check_dangling_symlinks(root: Path) -> list:
 
 
 def check_root_clean(root: Path) -> list:
-    return [f"stray file at repo root: {p.name}"
-            for p in root.iterdir() if p.is_file() and p.name not in ALLOWED_ROOT]
+    import subprocess
+    stray = [p.name for p in root.iterdir() if p.is_file() and p.name not in ALLOWED_ROOT]
+    if stray:  # git-ignored files (e.g. a tool's *.log) never reach a commit; skip them
+        r = subprocess.run(["git", "check-ignore", *stray], cwd=root, capture_output=True, text=True)
+        stray = [s for s in stray if s not in set(r.stdout.split())]
+    return [f"stray file at repo root: {s}" for s in stray]
 
 
 def check_root_dirs_declared(root: Path) -> list:
@@ -150,7 +154,37 @@ def check_no_duplicated_logic(root: Path) -> list:
     return errs
 
 
+MAX_STAGED_BYTES = 1_000_000
+DATA_DIRS = ("data/", "output/")
+DATA_SUBDIRS = ("results", "logs", "output", "figures", "cache", "input", "models", "artifacts")
+
+
+def check_staged_not_data(root: Path) -> list:
+    """No data in commits: a staged file must be < 1 MB and outside data/results/logs folders.
+
+    Backstop for .gitignore gaps (2026-11-03, EPAS1: 189 results/*.csv got committed because
+    .gitignore listed file types but not the results/ folder). Only looks at what is staged.
+    """
+    import subprocess
+    try:
+        out = subprocess.run(["git", "diff", "--cached", "--name-only", "--diff-filter=AM", "-z"],
+                             cwd=root, capture_output=True, check=True).stdout.decode()
+    except (OSError, subprocess.CalledProcessError):
+        return []
+    errs = []
+    for rel in filter(None, out.split("\0")):
+        parts = rel.split("/")
+        if rel.startswith(DATA_DIRS) or (parts[0] == "experiments" and any(p in DATA_SUBDIRS for p in parts[2:-1])):
+            errs.append(f"staged data path: {rel}  (unstage: git rm --cached '{rel}')")
+            continue
+        p = root / rel
+        if p.is_file() and p.stat().st_size > MAX_STAGED_BYTES:
+            errs.append(f"staged file > 1 MB: {rel} ({p.stat().st_size / 1e6:.1f} MB)")
+    return errs
+
+
 CHECKS = {
+    "no data in the commit": check_staged_not_data,
     "experiment READMEs": check_experiment_readmes,
     "INDEX.md sync": check_index_sync,
     "no dangling data symlinks": check_dangling_symlinks,
