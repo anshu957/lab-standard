@@ -82,7 +82,7 @@ CLAUDE.md is *steering*, not a guarantee; only hooks hard-stop an agent. So enfo
 | Core rules   | `UserPromptSubmit` hook `core_rules.sh` + `global/RULES.md` | injects 3 generic rules (don't fool yourself; thought experiment + estimate first; explain like Feynman) and 4 reply labels (Measured / Failed / Reasoning / Hunch) into **every** prompt, every project — deterministic, not a skill the model may skip |
 | Grounding    | `UserPromptSubmit` hook `ground_check.sh` + per-project `CONCLUSIONS.md` | injects the conclusions ledger (Established/Open/Retracted) into **every** prompt so verified findings can't drift out of attention mid-session; don't contradict an Established conclusion without re-deriving it |
 | Lifecycle: START | `SessionStart` hook `session_state.sh` | injects recent git log/status + `WORKLOG.md` tail + ledger at session open, so every session begins knowing what's been done + what's in flight (don't redo finished work) |
-| Lifecycle: FINISH | `Stop` hook `finish_gate.sh` + per-project `WORKLOG.md` | **hard-blocks finishing** when real files changed (non-`.md`: scripts/data/figures) unless (1) `WORKLOG.md` was updated AND (2) that work is **committed** — the commit-gate keeps git the never-stale ground truth. Read-only turns change nothing, so it never fires on them. |
+| Lifecycle: FINISH | `Stop` hook `finish_gate.sh` + per-project `WORKLOG.md` | **hard-blocks finishing** when real files changed (non-`.md`: scripts/data/figures) unless (1) `WORKLOG.md` was updated AND (2) that work is **committed**; also blocks whenever `WORKLOG.md` changed but its newest entry lacks the `> Asking:` / `> Learned:` / `> Next:` plain block (§6a) — the commit-gate keeps git the never-stale ground truth. Read-only turns change nothing, so it never fires on them. |
 | RAM safety | PreToolUse(Bash) hook `require_memwatch.sh` + `memwatch.sh` | hard stop: any python / Rscript / R / jupyter / `just run|submit` command must be wrapped as `bash ~/.claude/hooks/memwatch.sh <cmd>`. memwatch samples the job's process-tree RSS every 2 s, kills it above `MEMWATCH_CAP_GB` (default 70% of RAM) or when system free RAM < 1 GB, and prints/logs peak RSS (`~/.claude/memwatch.log`). Report `peak_rss` after every run. |
 
 ## 6a. Grounding + the task lifecycle (`CONCLUSIONS.md`, `WORKLOG.md`)
@@ -93,6 +93,9 @@ README); **DURING → know what you're doing** (reconcile with that state; is it
 **FINISH → record it** (append to **`WORKLOG.md`** — what/why/result/next — which a `Stop` hook enforces
 by blocking a finish that changed real files without logging). `WORKLOG.md` is the general append-only
 activity journal; `experiments/INDEX.md` remains the research-specific run registry.
+Each entry ends with a **plain block** written for a scientist, which the `/lab` pane shows as NOW:
+`> Asking:` / `> Learned:` / `> Next:` — one short sentence each, no numbers, tool names or experiment IDs;
+`Next` starts with `Your call:` when it waits on the user. Older entries without it are left as they are.
 
 ### Conclusions ledger — detail
 Over a long (especially agent) session the *most recent* artifact dominates attention and the agent

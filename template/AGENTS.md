@@ -13,7 +13,7 @@
 4. Before writing a utility, **grep `src/{{PKG}}/`** for an existing one. Reuse, don't regenerate.
 
 ## Finish every task by
-Appending a dated entry to **`WORKLOG.md`** (what you did / why / result / what's next). A `Stop` hook blocks finishing if you changed real files without logging. Update `CONCLUSIONS.md` too if a conclusion changed.
+Appending a dated entry to **`WORKLOG.md`** (what you did / why / result / what's next). End it with a plain block (`> Asking:` / `> Learned:` / `> Next:`, one short sentence each, no numbers/tool names/IDs; `Your call:` if it waits on the user); the `/lab` pane shows it. A `Stop` hook blocks finishing if you changed real files without logging. Update `CONCLUSIONS.md` too if a conclusion changed.
 
 ## Setup & commands
 - Environment: `conda activate {{ENV}}`  (defined in `environment.yml`)

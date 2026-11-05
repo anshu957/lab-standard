@@ -10,3 +10,7 @@
 - why:
 - result:
 - next:
+
+> Asking: <the question, in plain words>
+> Learned: <what we now know, one sentence>
+> Next: <next step; start with "Your call:" if it waits on you>

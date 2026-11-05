@@ -37,6 +37,7 @@ Guard against it:
 3. **FINISH — record what you did.** Append a dated entry to **`WORKLOG.md`** (what / why / result /
    what's next). A `Stop` hook **blocks finishing** if you changed real files (scripts/data/figures)
    without logging. Git is the never-stale ground truth — the log points to it; keep both current.
+   End each entry with a plain block for a scientist (the `/lab` pane shows it as NOW): `> Asking:` / `> Learned:` / `> Next:`, one short sentence each, no numbers, tool names or IDs; start Next with `Your call:` when it waits on the user.
 
 ### Figures (every plot, every project)
 - **Before writing ANY plotting code, invoke the `figure-hygiene` skill** and follow it (one figure = one question = one panel, the question as its bold title, no numbers/method notes on the plot → `figure_captions.md`). Ask me only when the design is genuinely ambiguous; run its `qa.py` and look at the PNG before showing.

@@ -24,6 +24,28 @@ git rev-parse --git-dir >/dev/null 2>&1 || exit 0
 
 changed="$(git status --porcelain 2>/dev/null | sed 's/^...//')"
 [ -z "$changed" ] && exit 0
+
+# GATE 0 — the plain block. Whenever WORKLOG.md changed, its newest entry (after the last "## " line)
+# must end with "> Asking:" / "> Learned:" / "> Next:" — the /lab pane shows that block as NOW.
+if printf '%s\n' "$changed" | grep -Eq '(^|/)WORKLOG\.md$'; then
+  wl="$(printf '%s\n' "$changed" | grep -E '(^|/)WORKLOG\.md$' | head -1)"
+  newest="$(awk '/^## /{buf=""} {buf=buf $0 "\n"} END{printf "%s", buf}' "$wl" 2>/dev/null)"
+  missing=""
+  for k in Asking Learned Next; do
+    printf '%s' "$newest" | grep -Eiq "^>[[:space:]]*$k:" || missing="$missing $k"
+  done
+  if [ -n "$missing" ]; then
+    {
+      echo "[FINISH gate] The newest WORKLOG.md entry has no plain block (missing:$missing)."
+      echo "End it with three lines for a scientist, one short sentence each, no numbers, tool names or IDs:"
+      echo "  > Asking: <the question, in plain words>"
+      echo "  > Learned: <what we now know>"
+      echo "  > Next: <next step; start with \"Your call:\" if it waits on the user>"
+      echo "Newest entry: $(printf '%s' "$newest" | head -1)"
+    } >&2
+    exit 2
+  fi
+fi
 # substantive = any changed path that is NOT a markdown doc
 substantive="$(printf '%s\n' "$changed" | grep -v '\.md$' || true)"
 [ -z "$substantive" ] && exit 0
