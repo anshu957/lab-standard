@@ -54,6 +54,10 @@ project/
 - **Leave a trace + commit it.** Finished a run → update its `INDEX.md` row; made a project-shaping choice → ADR. Non-doc work must be **committed** at the finishing boundary (a `Stop` hook blocks otherwise), so git — and each manifest's commit hash — matches reality.
 - **Commit code and provenance, never data.** Committed: scripts, `config.yaml`, `manifest.json`, `metrics/*.json`, READMEs, ledgers. Not committed: anything in `data/`, an experiment's `results/`, `logs/`, `figures/`, `output/`. Enforced at commit time by `.git/hooks/pre-commit` → `check.py` "no data in the commit" (staged file > 1 MB or under those folders fails). Every project must have that hook installed (`/new-project` step 4).
 
+## 3b. Analysis & figure discipline (two enforced skills)
+- **`simple-first`** (Occam's razor): the simplest analysis that could answer the question comes first; show the plain result and stop for human approval before adding any complexity, then build up one approved level at a time.
+- **`figure-hygiene`**: one title = the key biological question; only strictly-necessary labels/legends; no explanatory text in the figure; all detail in a `figure_captions.md` in the experiment folder, kept in sync.
+
 ## 4. Self-describing runs (provenance)
 `run.py` calls `provenance.write_manifest()` and `tracking.run()` for you. Each run folder ends up
 with a `manifest.json` (git commit + uncommitted diff, conda env lock, seed, input/output sha256,
